@@ -14,7 +14,7 @@ Clasificador automático de archivos de Google Drive utilizando IA (Google Gemin
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <url-del-repositorio>
+git clone https://github.com/albaM15/google-drive-classifier.git
 cd google-drive-classifier
 ```
 
@@ -93,11 +93,12 @@ pip install -r requirements.txt
 #### b) Crear archivo de variables de entorno
 
 1. Crea un archivo `.env` en la raíz del proyecto:
+
    ```bash
    touch .env
    ```
-
 2. Abre el archivo y agrega tu API key:
+
    ```
    GEMINI_API_KEY=tu_api_key_aqui
    ```
@@ -111,6 +112,7 @@ python auth.py
 ```
 
 **Pasos:**
+
 1. Se abrirá una ventana del navegador
 2. Selecciona tu cuenta de Google (debe ser la misma que agregaste como usuario de prueba)
 3. Si aparece una advertencia "Google hasn't verified this app", haz clic en **"Continuar"** o **"Advanced"** → **"Go to [app name]"**
@@ -129,6 +131,7 @@ python main.py
 ```
 
 El script:
+
 1. Se conectará a tu Google Drive
 2. Obtendrá una lista de archivos (por defecto, los primeros 10)
 3. Extraerá el contenido de cada archivo
@@ -167,6 +170,7 @@ google-drive-classifier/
 ### Error: `ModuleNotFoundError: No module named 'google_auth_oauthlib'`
 
 **Solución:** Asegúrate de haber activado el entorno virtual e instalado las dependencias:
+
 ```bash
 source venv/bin/activate
 pip install -r requirements.txt
@@ -175,6 +179,7 @@ pip install -r requirements.txt
 ### Error: `403: access_denied` durante la autenticación
 
 **Solución:** Debes agregar tu cuenta como usuario de prueba en Google Cloud Console:
+
 1. Ve a **"APIs y servicios"** → **"Pantalla de consentimiento de OAuth"**
 2. En la sección **"Usuarios de prueba"**, agrega tu correo electrónico
 3. Guarda los cambios
@@ -191,6 +196,7 @@ pip install -r requirements.txt
 ## 🔒 Seguridad
 
 > ⚠️ **ADVERTENCIA:** Nunca compartas ni subas a repositorios públicos los siguientes archivos:
+>
 > - `.env` (contiene tu API key)
 > - `credentials.json` (contiene tus credenciales OAuth)
 > - `token.json` (contiene tu token de acceso)
