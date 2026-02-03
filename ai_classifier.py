@@ -1,11 +1,11 @@
-from google import genai
+import requests
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Nueva forma de inicializar el cliente
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
 def classify_content(text, filename):
     if not text or len(text.strip()) < 10:
@@ -14,12 +14,28 @@ def classify_content(text, filename):
     prompt = f"Analiza el archivo '{filename}' con este contenido: {text[:2000]}. Clasifica en: [Backend, Frontend, Universidad, Finanzas, Personal]. Responde solo la categoría."
     
     try:
-        # Nueva sintaxis de generación
-        response = client.models.generate_content(
-            model="gemini-1.5-flash",
-            contents=prompt
+        # Usar la API REST directamente
+        headers = {"Content-Type": "application/json"}
+        data = {
+            "contents": [{
+                "parts": [{"text": prompt}]
+            }]
+        }
+        
+        response = requests.post(
+            f"{GEMINI_API_URL}?key={GEMINI_API_KEY}",
+            headers=headers,
+            json=data,
+            timeout=30
         )
-        return response.text.strip()
+        
+        if response.status_code == 200:
+            result = response.json()
+            return result['candidates'][0]['content']['parts'][0]['text'].strip()
+        else:
+            print(f"Error IA: {response.status_code} - {response.text}")
+            return "Sin_Clasificar"
+            
     except Exception as e:
         print(f"Error IA: {e}")
         return "Sin_Clasificar"
