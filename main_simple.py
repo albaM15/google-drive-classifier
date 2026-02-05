@@ -40,7 +40,7 @@ def main():
     # Clasificar y mover cada archivo
     for item in files:
         content = extract_text(service, item)
-        category = classify_content_simple(content, item['name'])
+        category = classify_content_simple(content, item['name'], debug=True)
         
         print(f"📄 {item['name']}")
         print(f"   └─ Categoría: {category}")

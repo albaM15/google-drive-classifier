@@ -5,13 +5,52 @@ from googleapiclient.http import MediaIoBaseDownload
 def extract_text(service, file_item):
     """Extrae texto del archivo para análisis."""
     try:
-        if 'google-apps' in file_item.get('mimeType', ''):
-            if 'document' in file_item['mimeType']:
-                return service.files().get(fileId=file_item['id'], fields='name').execute()['name']
-        return file_item.get('name', '')
+        mime_type = file_item.get('mimeType', '')
+        file_id = file_item['id']
+        
+        # Google Docs - Exportar como texto plano
+        if mime_type == 'application/vnd.google-apps.document':
+            request = service.files().export_media(
+                fileId=file_id,
+                mimeType='text/plain'
+            )
+            file_content = io.BytesIO()
+            downloader = MediaIoBaseDownload(file_content, request)
+            done = False
+            while not done:
+                status, done = downloader.next_chunk()
+            return file_content.getvalue().decode('utf-8')
+        
+        # Google Sheets - Exportar como CSV
+        elif mime_type == 'application/vnd.google-apps.spreadsheet':
+            request = service.files().export_media(
+                fileId=file_id,
+                mimeType='text/csv'
+            )
+            file_content = io.BytesIO()
+            downloader = MediaIoBaseDownload(file_content, request)
+            done = False
+            while not done:
+                status, done = downloader.next_chunk()
+            return file_content.getvalue().decode('utf-8')
+        
+        # Archivos de texto plano
+        elif mime_type.startswith('text/'):
+            request = service.files().get_media(fileId=file_id)
+            file_content = io.BytesIO()
+            downloader = MediaIoBaseDownload(file_content, request)
+            done = False
+            while not done:
+                status, done = downloader.next_chunk()
+            return file_content.getvalue().decode('utf-8', errors='ignore')
+        
+        # PDFs y otros archivos - solo usar el nombre
+        else:
+            return file_item.get('name', '')
+            
     except Exception as e:
-        print(f"Error extrayendo texto: {e}")
-        return ""
+        print(f"   ⚠️  No se pudo extraer contenido, usando solo nombre del archivo")
+        return file_item.get('name', '')
 
 def get_or_create_folder(service, folder_name, parent_id=None):
     """
